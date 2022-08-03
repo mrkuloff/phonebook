@@ -100,8 +100,8 @@ const data = [
     thead.insertAdjacentHTML('beforeend', `
     <tr>
         <th class="delete">Удалить</th>
-        <th>Имя</th>
-        <th>Фамилия</th>
+        <th class="th-name">Имя</th>
+        <th class="th-surname">Фамилия</th>
         <th>Телефон</th>
         <th>Редактировать</th>
     </tr>
@@ -167,6 +167,7 @@ const data = [
 
   const createRow = ({name: firstname, surname, phone}) => {
     const tr = document.createElement('tr');
+    tr.classList.add('contact');
 
     const tdDel = document.createElement('td');
     tdDel.classList.add('delete');
@@ -176,6 +177,7 @@ const data = [
 
     const tdName = document.createElement('td');
     tdName.textContent = firstname;
+    tdName.classList.add('td-name')
 
     const tdSurname = document.createElement('td');
     tdSurname.textContent = surname;
@@ -227,15 +229,15 @@ const data = [
     main.mainContainer.append(buttonGroup.btnWrapper, table, form.overlay);
     app.append(header, main, footer);
 
-    const btnClose = document.querySelector('.close');
-
     return {
+      table,
       list: table.tbody,
+      listHead: table.tHead,
       logo,
       btnAdd: buttonGroup.btns[0],
+      btnDel: buttonGroup.btns[1],
       formOverlay: form.overlay,
       form: form.form,
-      btnClose,
     }
   };
 
@@ -285,7 +287,16 @@ const data = [
     const  app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
 
-    const {list, logo, btnAdd, formOverlay, form, btnClose} = phoneBook;
+    const
+      {table,
+        list,
+        listHead,
+        logo,
+        btnAdd,
+        btnDel,
+        formOverlay,
+        form,
+      } = phoneBook;
 
     //функционад
     const allRow = renderContacts(list, data);
@@ -296,20 +307,79 @@ const data = [
       formOverlay.classList.add('is-visible');
     });
 
-    btnClose.addEventListener('click', () => {
-      formOverlay.classList.remove('is-visible');
+
+    formOverlay.addEventListener('click', e => {
+      const target = e.target;
+      if (target === formOverlay ||
+      target.closest('.close')) {
+        formOverlay.classList.remove('is-visible');
+      }
     });
 
-    form.addEventListener('click', event => {
-      event.stopImmediatePropagation();
+    btnDel.addEventListener('click', () => {
+      document.querySelectorAll('.delete').forEach(del => {
+        del.classList.toggle('is-visible');
+      });
     });
 
-    formOverlay.addEventListener('click', () => {
-      formOverlay.classList.remove('is-visible');
+    list.addEventListener('click', e => {
+      const target = e.target;
+      if (target.closest('.del-icon')) {
+        target.closest('.contact').remove();
+      }
     });
 
+    /*
+    listHead.addEventListener('click', e => {
+      const target = e.target;
+      if (target.closest('.th-name') ||
+        target.closest('.th-surname')) {
+        list.forEach('')
+      }
+    });
+     */
+    // Обойти циклом все заголовки
+    [].forEach.call(listHead, (header, index) => {
+      listHead.addEventListener('click', e => {
+        const target = e.target;
+        if (target.closest('.th-name') ||
+          target.closest('.th-surname')) {
+          sortColumn(index);
+        }
+      });
+    });
 
+    //Запросить все строки
+    const tableBody = table.querySelector('tbody');
+    const rows = tableBody.querySelectorAll('tr');
 
+    const sortColumn = function(index) {
+      // Клонируем все строки
+      const newRows = Array.from(rows);
+
+      // Сортируем строки по содержимому ячеек. Массив предоставляет встроенный метод сортировки, который принимает функцию для сравнения двух элементов. Здесь две ячейки столбца сравниваются на основе их HTML-содержимого
+      newRows.sort(function(rowA, rowB) {
+        // Получаем содержимое ячеек
+        const cellA = rowA.querySelectorAll('td')[index].innerHTML;
+        const cellB = rowB.querySelectorAll('td')[index].innerHTML;
+
+        switch (true) {
+          case cellA > cellB: return 1;
+          case cellA < cellB: return -1;
+          case cellA === cellB: return 0;
+        }
+      });
+
+      // Удаляем старые строки
+      [].forEach.call(rows, function(row) {
+        tableBody.removeChild(row);
+      });
+
+      // Добавляем новую строку
+      newRows.forEach(function(newRow) {
+        tableBody.appendChild(newRow);
+      });
+    };
   };
 
   window.phoneBookInit = init;
