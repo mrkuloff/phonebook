@@ -130,3 +130,32 @@ body {
   color: #fff;
   text-align: center;
 }
+
+
+
+th.sorted[data-order="1"],
+th.sorted[data-order="-1"] {
+  position: relative;
+}
+
+th.sorted[data-order="1"]::after,
+th.sorted[data-order="-1"]::after {
+  right: 8px;
+  position: absolute;
+}
+
+th.sorted[data-order="-1"]::after {
+  content: "▼";
+}
+
+th.sorted[data-order="1"]::after {
+  content: "▲";
+}
+
+.table table {
+  border-collapse: collapse;
+}
+
+.table th {
+  cursor: pointer;
+}

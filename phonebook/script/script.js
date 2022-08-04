@@ -177,7 +177,6 @@ const data = [
 
     const tdName = document.createElement('td');
     tdName.textContent = firstname;
-    tdName.classList.add('td-name')
 
     const tdSurname = document.createElement('td');
     tdSurname.textContent = surname;
@@ -329,57 +328,34 @@ const data = [
       }
     });
 
-    /*
-    listHead.addEventListener('click', e => {
-      const target = e.target;
-      if (target.closest('.th-name') ||
-        target.closest('.th-surname')) {
-        list.forEach('')
-      }
-    });
-     */
-    // Обойти циклом все заголовки
-    [].forEach.call(listHead, (header, index) => {
-      listHead.addEventListener('click', e => {
-        const target = e.target;
-        if (target.closest('.th-name') ||
-          target.closest('.th-surname')) {
-          sortColumn(index);
-        }
-      });
-    });
+    const getSort = ({ target }) => {
+      const order = (target.dataset.order = -(target.dataset.order || -1));
+      const index = [...target.parentNode.cells].indexOf(target);
+      const collator = new Intl.Collator(['en', 'ru'], { numeric: true });
+      const comparator = (index, order) => (a, b) => order * collator.compare(
+        a.children[index].innerHTML,
+        b.children[index].innerHTML
+      );
 
-    //Запросить все строки
-    const tableBody = table.querySelector('tbody');
-    const rows = tableBody.querySelectorAll('tr');
+      for(const tBody of target.closest('table').tBodies)
+        tBody.append(...[...tBody.rows].sort(comparator(index, order)));
 
-    const sortColumn = function(index) {
-      // Клонируем все строки
-      const newRows = Array.from(rows);
-
-      // Сортируем строки по содержимому ячеек. Массив предоставляет встроенный метод сортировки, который принимает функцию для сравнения двух элементов. Здесь две ячейки столбца сравниваются на основе их HTML-содержимого
-      newRows.sort(function(rowA, rowB) {
-        // Получаем содержимое ячеек
-        const cellA = rowA.querySelectorAll('td')[index].innerHTML;
-        const cellB = rowB.querySelectorAll('td')[index].innerHTML;
-
-        switch (true) {
-          case cellA > cellB: return 1;
-          case cellA < cellB: return -1;
-          case cellA === cellB: return 0;
-        }
-      });
-
-      // Удаляем старые строки
-      [].forEach.call(rows, function(row) {
-        tableBody.removeChild(row);
-      });
-
-      // Добавляем новую строку
-      newRows.forEach(function(newRow) {
-        tableBody.appendChild(newRow);
-      });
+      for(const cell of target.parentNode.cells)
+        cell.classList.toggle('sorted', cell === target);
     };
+
+    const tableForSort = document.querySelectorAll('.table thead');
+
+    tableForSort.forEach(tableTH => {
+      tableTH.addEventListener('click', event => {
+        if (event.target.closest('.th-name') || event.target.closest('.th-surname')) {
+          getSort(event);
+        }
+      });
+    });
+
+
+
   };
 
   window.phoneBookInit = init;
