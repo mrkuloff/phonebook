@@ -1,6 +1,6 @@
 'use strict';
 
-const data = [
+/*const data = [
   {
     name: 'Иван',
     surname: 'Петров',
@@ -22,13 +22,9 @@ const data = [
     phone: '+79876543210',
   },
 ];
+ */
 
 {
-  const addContactData = contact => {
-    data.push(contact);
-    console.log('data: ', data);
-  };
-
   const createContainer = () => {
     const container = document.createElement('div');
     container.classList.add('container');
@@ -170,7 +166,9 @@ const data = [
     }
   };
 
-  const createRow = ({name: firstname, surname, phone}) => {
+  const createRow = ({name: firstname,
+                       surname,
+                       phone}) => {
     const tr = document.createElement('tr');
     tr.classList.add('contact');
 
@@ -257,36 +255,6 @@ const data = [
     });
   };
 
-  /*const bubblingCapturing = () => {//всплытие и перехват
-    const btnAdd = document.querySelector('.js-add');
-    const btnWrapper = document.querySelector('.btn-wrapper');
-    const container = document.querySelector('.container');
-    const main = document.querySelector('main');
-    const app = document.querySelector('#app');
-    const body = document.querySelector('body');
-
-    btnAdd.addEventListener('click', () => {
-
-    })
-    btnWrapper.addEventListener('click', () => {
-
-    })
-    container.addEventListener('click', () => {
-
-    })
-    main.addEventListener('click', () => {
-
-    })
-    app.addEventListener('click', () => {
-
-    })
-    body.addEventListener('click', () => {
-
-    })
-
-
-  };*/
-
   const modalControl = (btnAdd, formOverlay) => {
     const openModal = () => {
       formOverlay.classList.add('is-visible');
@@ -297,8 +265,6 @@ const data = [
     };
 
     btnAdd.addEventListener('click', openModal);
-
-
 
     formOverlay.addEventListener('click', e => {
       const target = e.target;
@@ -323,6 +289,11 @@ const data = [
       const target = e.target;
       if (target.closest('.del-icon')) {
         target.closest('.contact').remove();
+        console.log(target);
+
+        let newStorage = getStorage();
+        newStorage.splice([...document.querySelectorAll('.del-icon')].indexOf(e.target), 1);
+        setStorage(newStorage);
       }
     });
   };
@@ -350,14 +321,36 @@ const data = [
       tableTH.addEventListener('click', event => {
         if (event.target.closest('.th-name') || event.target.closest('.th-surname')) {
           getSort(event);
+          //TODO: добавить сохранение в localStorage
         }
       });
     });
   };
 
+
   const addContactPage = (contact, list) => {
     list.append(createRow(contact));
   };
+
+  const getStorage = () => (localStorage.getItem('phonebook') ?
+    JSON.parse(localStorage.getItem('phonebook')) : []);
+
+  const setStorage = (data) => {
+    localStorage.setItem('phonebook', JSON.stringify(data));
+  };
+
+  const removeStorage = (phone) => {
+    const data = getStorage('phonebook');
+    const newData = data.filter(item => item.phone !== phone);
+    setStorage(newData);
+  };
+
+  const  addStorage = (data) => {
+    const newData = getStorage('phonebook');
+    newData.push(data);
+    setStorage(newData);
+  };
+
 
   const formControl = (form, list, closeModal) => {
     form.addEventListener('submit', e => {
@@ -367,7 +360,7 @@ const data = [
       const newContact = Object.fromEntries(formData);
 
       addContactPage(newContact, list);
-      addContactData(newContact);
+      addStorage(newContact);
       form.reset();
       closeModal();
     });
@@ -375,6 +368,7 @@ const data = [
 
   const init = (selectorApp, title) => {
     const  app = document.querySelector(selectorApp);
+    const data = getStorage();
 
 
     const {
@@ -390,7 +384,7 @@ const data = [
 
     //функционад
     const allRow = renderContacts(list, data);
-    const {closeModal} = modalControl(btnAdd, formOverlay);
+    const {closeModal }= modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, logo);
     deleteControl(btnDel, list);
