@@ -1,5 +1,3 @@
-'use strict';
-
 const renderContacts = (elem, data) => {
   const  allRow = data.map(createRow);
   elem.append(...allRow);

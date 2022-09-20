@@ -1,7 +1,4 @@
-'use strict';
-
-
-const getStorage = () => (localStorage.getItem('phonebook') ?
+export const getStorage = () => (localStorage.getItem('phonebook') ?
   JSON.parse(localStorage.getItem('phonebook')) : []);
 
 const setStorage = (data) => {
