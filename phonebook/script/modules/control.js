@@ -1,48 +1,56 @@
+import { createRow } from './createElements.js';
+
+
+import {
+  getStorage,
+  setStorage,
+  addStorage } from './serviceStorage.js';
+
 const modalControl = (btnAdd, formOverlay) => {
-const openModal = () => {
-formOverlay.classList.add('is-visible');
-};
+  const openModal = () => {
+    formOverlay.classList.add('is-visible');
+  };
 
-const closeModal = () => {
-formOverlay.classList.remove('is-visible');
-};
+  const closeModal = () => {
+    formOverlay.classList.remove('is-visible');
+  };
 
-btnAdd.addEventListener('click', openModal);
+  btnAdd.addEventListener('click', openModal);
 
-formOverlay.addEventListener('click', e => {
-const target = e.target;
-if (target === formOverlay ||
-target.closest('.close')) {
-closeModal();
-}
-});
-return {
-closeModal,
-};
+  formOverlay.addEventListener('click', e => {
+    const target = e.target;
+    if (target === formOverlay ||
+    target.closest('.close')) {
+    closeModal();
+    }
+    });
+    return {
+      closeModal,
+  };
 };
 
 const deleteControl = (btnDel, list) => {
-btnDel.addEventListener('click', () => {
-document.querySelectorAll('.delete').forEach(del => {
-del.classList.toggle('is-visible');
-});
-});
+  btnDel.addEventListener('click', () => {
+  document.querySelectorAll('.delete').forEach(del => {
+    del.classList.toggle('is-visible');
+  });
+  });
 
-list.addEventListener('click', e => {
-const target = e.target;
-if (target.closest('.del-icon')) {
-target.closest('.contact').remove();
-console.log(target);
+  list.addEventListener('click', e => {
+    const target = e.target;
+    if (target.closest('.del-icon')) {
+    target.closest('.contact').remove();
+    console.log(target);
 
-let newStorage = getStorage();
-newStorage.splice([...document.querySelectorAll('.del-icon')].indexOf(e.target), 1);
-setStorage(newStorage);
-}
-});
+    let newStorage = getStorage();
+    newStorage.splice([...document.querySelectorAll('.del-icon')].indexOf(e.target), 1);
+    setStorage(newStorage);
+    }
+  });
 };
 
 const addContactPage = (contact, list) => {
-list.append(createRow(contact));
+  list.append(createRow(contact));
 };
 
 const formControl = (form, list, closeModal) => {
@@ -71,7 +79,7 @@ const hoverRow = (allRow, logo) => {
   });
 };
 
-export default {
+export {
   modalControl,
   deleteControl,
   formControl,

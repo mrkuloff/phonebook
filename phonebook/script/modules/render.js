@@ -1,3 +1,13 @@
+import {
+  createHeader,
+  createLogo,
+  createMain,
+  createFooter,
+  createButtonGroup,
+  createTable,
+  createForm,
+  createRow } from './createElements.js';
+
 const renderContacts = (elem, data) => {
   const  allRow = data.map(createRow);
   elem.append(...allRow);
@@ -71,7 +81,7 @@ const sortList = () => {
   });
 };
 
-export default {
+export {
   renderContacts,
   renderPhoneBook,
   sortList,

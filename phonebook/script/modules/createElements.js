@@ -172,7 +172,7 @@ const createRow = ({name: firstname,
   return tr;
 }
 
-export default {
+export {
   createHeader,
   createLogo,
   createMain,
